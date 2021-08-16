@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import './App.scss'
+import Counter from './Counter';
+import { add, asyncAdd, changeIncrement, sub } from './redux/actions/actions';
 
 class App extends Component {
 
@@ -8,6 +10,10 @@ class App extends Component {
     // this.setState({
     //   counter: this.state.counter + value
     // })
+  }
+
+  onChange = e => {
+    this.props.changeIncrement(+e.target.value)
   }
 
   render() {
@@ -20,9 +26,18 @@ class App extends Component {
         <hr/>
 
         <div className="Actions">
-          <button onClick={() => this.props.increase(5)}>Добавить 1</button>
-          <button onClick={() => this.props.decrease(5)}>Вычесть 1</button>
+          <button onClick={() => this.props.increase(this.props.increment)}>Добавить {this.props.increment}</button>
+          <button onClick={() => this.props.decrease(this.props.increment)}>Вычесть {this.props.increment}</button>
         </div>
+        <input type='text' onChange={this.onChange}></input>
+
+        <div className="Actions">
+          <button onClick={() => this.props.onAsyncAdd(100)}>
+            Ассинхронно добавить 100
+          </button>
+        </div>
+
+        <Counter/>
       </div>
     )
   }
@@ -30,14 +45,17 @@ class App extends Component {
 
 function mapStateToProps(state) {
   return {
-    counter: state.counter
+    counter: state.counter1.counter,
+    increment: state.counter1.increment
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    decrease: (value) => dispatch({type: 'SUB', value: value}),
-    increase: (value) => dispatch({type: 'ADD', value: value})
+    decrease: (value) => dispatch(sub(value)),
+    increase: (value) => dispatch(add(value)),
+    changeIncrement: (value) => dispatch(changeIncrement(value)),
+    onAsyncAdd: value => dispatch(asyncAdd(value))
   }
 }
 
